@@ -9,10 +9,10 @@ const LoginPage = () => {
 
     const handleLogin = (e) => {
         e.preventDefault();
-        if (password === '1111') {
+        if (email === 'ilikepeople@icloud.com' && password === '1111') {
             navigate('/admin');
         } else {
-            navigate('/');
+            alert('이메일 또는 비밀번호가 올바르지 않습니다.');
         }
     };
 
@@ -66,12 +66,7 @@ const LoginPage = () => {
                     </button>
                 </form>
 
-                <div className="mt-12 text-center relative z-10">
-                    <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-[11px] text-primary font-bold uppercase tracking-widest flex items-center justify-center space-x-2">
-                        <ShieldCheck size={14} />
-                        <span>Master Access Code: 1111</span>
-                    </div>
-                </div>
+
             </div>
         </div>
     );
