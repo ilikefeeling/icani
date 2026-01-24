@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+:root {
+  --font-sans: 'Pretendard', 'Noto Sans KR', sans-serif;
+  --bg-dark: #05060b;
+  --bg-darker: #020306;
+  --card-dark: #11141d;
+  --primary-glow: #00e0ff;
+  --secondary-glow: #007aff;
+}
+
+@theme {
+  --color-primary: #00e0ff;
+  --color-primary-dark: #007aff;
+  --color-background: #05060b;
+  --color-text: #ffffff;
+  --color-card: #11141d;
+
+  --font-sans: 'Pretendard', 'Noto Sans KR', sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: #05060b;
+    color: white;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(circle at 50% 0%, rgba(0, 224, 255, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 0% 100%, rgba(0, 122, 255, 0.05) 0%, transparent 40%);
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary hover:bg-white text-black px-8 py-3 rounded-full transition-all duration-300 font-bold active:scale-95;
+    box-shadow: 0 0 20px rgba(0, 224, 255, 0.3);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+  }
+
+  .btn-secondary {
+    @apply bg-white/10 hover:bg-white/20 text-white px-8 py-3 rounded-full transition-all duration-300 font-bold border border-white/10 active:scale-95;
+    backdrop-filter: blur(12px);
+  }
+
+  .glass-card {
+    @apply bg-white/[0.02] border border-white/10 shadow-2xl rounded-[2rem];
+    backdrop-filter: blur(16px);
+  }
+
+  .nav-link {
+    @apply text-white/70 hover:text-white transition-colors text-sm font-bold relative py-1;
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300;
+  }
+
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+
+  .glow-border {
+    @apply relative border border-white/10 rounded-[2rem] overflow-hidden;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+  }
+}
+
+/* Custom Utilities */
+.text-glow {
+  text-shadow: 0 0 15px rgba(0, 224, 255, 0.5);
+}
+
+.bg-mesh {
+  background-image:
+    linear-gradient(rgba(0, 224, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 224, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
