@@ -1,7 +1,57 @@
-import { ArrowRight, User, Globe, MessageSquare, Cpu, Sparkles, LayoutGrid } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ArrowRight, User, Globe, MessageSquare, Cpu, Sparkles, LayoutGrid, Search, Filter, Info, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useToast } from '../components/ToastContext';
+
+const INITIAL_APPS = [
+    {
+        id: 1,
+        title: "AI 이미지 마스터",
+        desc: "텍스트만으로 고퀄리티 마케팅 이미지를 자동 생성하는 솔루션입니다.",
+        price: "150,000",
+        category: "Design",
+        image: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=600",
+    },
+    {
+        id: 2,
+        title: "뉴럴 컨텐츠 라이터",
+        desc: "블로그, SNS, 보도자료를 1분 만에 초안부터 완성본까지 작성합니다.",
+        price: "89,000",
+        category: "Writing",
+        image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=600",
+    },
+    {
+        id: 3,
+        title: "보이스 시뮬레이터 Pro",
+        desc: "실제 사람과 구분하기 힘든 자연스러운 AI 음성 합성 및 더빙 기술.",
+        price: "120,000",
+        category: "Media",
+        image: "https://images.unsplash.com/photo-1589149098258-3e9102ca63d3?auto=format&fit=crop&q=80&w=600",
+    }
+];
 
 const LandingPage = () => {
+    const { showToast } = useToast();
+    const [apps, setApps] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('All');
+
+    useEffect(() => {
+        const storedApps = localStorage.getItem('ican_apps');
+        if (storedApps) {
+            setApps(JSON.parse(storedApps));
+        } else {
+            setApps(INITIAL_APPS);
+            localStorage.setItem('ican_apps', JSON.stringify(INITIAL_APPS));
+        }
+    }, []);
+
+    const filteredApps = apps.filter(app => {
+        const matchesSearch = app.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = selectedCategory === 'All' || app.category === selectedCategory;
+        return matchesSearch && matchesCategory;
+    });
+
     const features = [
         {
             icon: <User className="text-primary w-8 h-8" />,
@@ -35,7 +85,7 @@ const LandingPage = () => {
 
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-1000">
                         <div className="space-y-6">
-                            <div className="inline-flex items-center space-x-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full text-xs font-bold text-primary tracking-tighter hover:bg-white/10 transition-colors cursor-pointer" onClick={() => alert('신규 서비스 런칭 중입니다!')}>
+                            <div className="inline-flex items-center space-x-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full text-xs font-bold text-primary tracking-tighter hover:bg-white/10 transition-colors cursor-pointer" onClick={() => showToast('신규 서비스 런칭 중입니다!')}>
                                 <Sparkles size={14} />
                                 <span>차세대 AI 비즈니스 통합 플랫폼 오픈!</span>
                             </div>
@@ -52,12 +102,12 @@ const LandingPage = () => {
                         </div>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                            <Link to="/portfolio" className="btn-primary w-full sm:w-auto px-12 py-4">
+                            <a href="#portfolio" className="btn-primary w-full sm:w-auto px-12 py-4">
                                 포트폴리오 보러가기
-                            </Link>
-                            <button className="btn-secondary w-full sm:w-auto px-12 py-4" onClick={() => alert('문의하기 버튼이 작동 중입니다. 이메일: contact@icanagi.com')}>
+                            </a>
+                            <Link to="/inquiry" className="btn-secondary w-full sm:w-auto px-12 py-4 text-center">
                                 문의하기
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -78,6 +128,82 @@ const LandingPage = () => {
                                 </div>
                                 <h3 className="text-2xl font-black mb-6 tracking-tight">{f.title}</h3>
                                 <p className="text-white/40 leading-relaxed font-medium text-base">{f.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Portfolio Section Integrated */}
+            <section id="portfolio" className="py-32 border-t border-white/5">
+                <div className="container mx-auto px-6">
+                    <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+                        <div className="space-y-4">
+                            <div className="inline-flex items-center space-x-2 text-primary font-bold text-xs uppercase tracking-widest">
+                                <Cpu size={14} />
+                                <span>AI App Portfolio</span>
+                            </div>
+                            <h2 className="text-4xl font-black tracking-tight">AI 앱 포트폴리오</h2>
+                            <p className="text-white/50 text-lg font-medium">최첨단 AI 기술이 담긴 앱들을 둘러보고 비즈니스에 도입해보세요.</p>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                            <div className="relative group">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-primary transition-colors" size={18} />
+                                <input
+                                    type="text"
+                                    placeholder="Search Apps..."
+                                    className="pl-12 pr-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all w-full sm:w-72 font-medium"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="relative">
+                                <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" size={18} />
+                                <select
+                                    className="pl-12 pr-10 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary appearance-none transition-all font-bold text-white/70"
+                                    value={selectedCategory}
+                                    onChange={(e) => setSelectedCategory(e.target.value)}
+                                >
+                                    <option value="All">All Categories</option>
+                                    {['Design', 'Writing', 'Media'].map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                        {filteredApps.map((app) => (
+                            <div key={app.id} className="glass-card group overflow-hidden hover:border-primary/40 transition-all duration-700 flex flex-col border border-white/5 p-4 bg-white/[0.02]">
+                                <div className="relative aspect-[16/10] rounded-2xl overflow-hidden mb-6">
+                                    <img
+                                        src={app.image}
+                                        alt={app.title}
+                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                                    />
+                                    <div className="absolute top-4 right-4 py-1.5 px-3 bg-black/60 backdrop-blur-md border border-white/10 rounded-full text-[10px] font-black text-primary uppercase tracking-widest">
+                                        {app.category}
+                                    </div>
+                                </div>
+
+                                <div className="px-4 pb-4 space-y-4 flex flex-col flex-grow">
+                                    <div className="space-y-2">
+                                        <h3 className="text-2xl font-black group-hover:text-primary transition-colors tracking-tight">{app.title}</h3>
+                                        <p className="text-white/40 line-clamp-2 text-sm font-medium leading-relaxed">{app.desc}</p>
+                                    </div>
+
+                                    <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between gap-4">
+                                        <div>
+                                            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">License Price</p>
+                                            <p className="text-2xl font-black text-white">₩{app.price}</p>
+                                        </div>
+                                        <button className="btn-primary !px-6 !py-3 !text-sm flex items-center space-x-2">
+                                            <span>구매하기</span>
+                                            <ArrowRight size={16} />
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -108,9 +234,9 @@ const LandingPage = () => {
                                 </div>
                             </div>
 
-                            <button className="btn-primary text-xl px-16 py-6 rounded-2xl shadow-[0_0_60px_rgba(0,224,255,0.5)] transform hover:scale-105 transition-all">
-                                지원 나기기
-                            </button>
+                            <Link to="/inquiry" className="btn-primary text-xl px-16 py-6 rounded-2xl shadow-[0_0_60px_rgba(0,224,255,0.5)] transform hover:scale-105 transition-all text-center">
+                                의뢰하기
+                            </Link>
 
                             <span className="text-xs font-black text-primary uppercase tracking-[0.3em] animate-pulse">300명 이상의 리더진 완료</span>
                         </div>
@@ -118,48 +244,6 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            <footer className="container mx-auto px-6 pt-32 pb-16 bg-[#05060b]">
-                <div className="grid md:grid-cols-12 gap-16 mb-20">
-                    <div className="md:col-span-5 space-y-8">
-                        <div className="flex items-center space-x-3">
-                            <Cpu className="w-10 h-10 text-primary" />
-                            <span className="text-2xl font-black tracking-[0.2em] uppercase text-glow">icanagi</span>
-                        </div>
-                        <p className="text-white/30 max-w-sm text-sm font-medium leading-[1.8]">
-                            독창적인 AI 앱 포트폴리오를 전시하고 라이선스 거래를 연결하는 차세대 비즈니스 통합 플랫폼입니다. 최상의 기술력과 신뢰를 바탕으로 비즈니스의 미래를 함께 설계합니다.
-                        </p>
-                    </div>
-
-                    <div className="md:col-span-3">
-                        <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-10">Quick Lists</h4>
-                        <ul className="space-y-6 text-sm font-black text-white/70 tracking-widest uppercase">
-                            <li><Link to="/" className="hover:text-primary transition-all flex items-center gap-2 group"><div className="w-1.5 h-1.5 bg-primary/40 rounded-full group-hover:scale-150 transition-all"></div>홈</Link></li>
-                            <li><Link to="/portfolio" className="hover:text-primary transition-all flex items-center gap-2 group"><div className="w-1.5 h-1.5 bg-primary/40 rounded-full group-hover:scale-150 transition-all"></div>포트폴리오</Link></li>
-                            <li><Link to="#" className="hover:text-primary transition-all flex items-center gap-2 group"><div className="w-1.5 h-1.5 bg-primary/40 rounded-full group-hover:scale-150 transition-all"></div>공지사항</Link></li>
-                            <li><Link to="/login" className="hover:text-primary transition-all flex items-center gap-2 group"><div className="w-1.5 h-1.5 bg-primary/40 rounded-full group-hover:scale-150 transition-all"></div>관리자 모드</Link></li>
-                        </ul>
-                    </div>
-
-                    <div className="md:col-span-4">
-                        <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-10">Contact Hub</h4>
-                        <ul className="space-y-6 text-sm font-bold text-white/40 leading-loose">
-                            <li className="flex items-start gap-4"><div className="w-2 h-2 rounded-full bg-primary/20 mt-2"></div>서울특별시 서초구 논현로27길 66</li>
-                            <li className="flex items-start gap-4"><div className="w-2 h-2 rounded-full bg-primary/20 mt-2"></div>02-1234-5678</li>
-                            <li className="flex items-start gap-4"><div className="w-2 h-2 rounded-full bg-primary/20 mt-2"></div>contact@icanai.com</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <p className="text-white/20 text-[10px] font-black tracking-[0.3em] uppercase">
-                        © {new Date().getFullYear()} ICAN AI. All rights reserved.
-                    </p>
-                    <div className="flex space-x-8 text-white/20 text-[10px] font-black uppercase tracking-widest">
-                        <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
-                        <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
-                    </div>
-                </div>
-            </footer>
         </div>
     );
 };

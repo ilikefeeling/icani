@@ -1,49 +1,47 @@
-import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Cpu } from 'lucide-react';
 
 const Footer = () => {
     return (
-        <footer className="bg-gray-50 border-t border-gray-100 pt-16 pb-8">
-            <div className="container mx-auto px-6">
-                <div className="grid md:grid-cols-4 gap-12 mb-12">
-                    <div className="col-span-1 md:col-span-2">
-                        <h3 className="text-2xl font-bold text-primary mb-6">icanagi</h3>
-                        <p className="text-gray-600 mb-6 max-w-sm">
-                            독창적인 AI 기반 앱 포트폴리오를 전시하고 라이선스 거래를 연결하는 차세대 비즈니스 통합 플랫폼입니다.
-                        </p>
-                        <div className="flex space-x-4">
-                            <a href="#" className="p-2 bg-white rounded-full shadow-sm hover:text-primary transition-colors">
-                                <Github size={20} />
-                            </a>
-                            <a href="#" className="p-2 bg-white rounded-full shadow-sm hover:text-primary transition-colors">
-                                <Twitter size={20} />
-                            </a>
-                            <a href="#" className="p-2 bg-white rounded-full shadow-sm hover:text-primary transition-colors">
-                                <Mail size={20} />
-                            </a>
-                        </div>
+        <footer className="container mx-auto px-6 pt-32 pb-16 bg-[#05060b]">
+            <div className="grid md:grid-cols-12 gap-16 mb-20">
+                <div className="md:col-span-5 space-y-8">
+                    <div className="flex items-center space-x-3">
+                        <Cpu className="w-10 h-10 text-primary" />
+                        <span className="text-2xl font-black tracking-[0.2em] uppercase text-glow">icanagi</span>
                     </div>
-
-                    <div>
-                        <h4 className="font-bold text-gray-900 mb-6">Quick Links</h4>
-                        <ul className="space-y-4 text-gray-600">
-                            <li><a href="/" className="hover:text-primary transition-colors">홈</a></li>
-                            <li><a href="/portfolio" className="hover:text-primary transition-colors">포트폴리오</a></li>
-                            <li><a href="#" className="hover:text-primary transition-colors" onClick={() => alert('공지사항 시스템 준비 중입니다.')}>공지사항</a></li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h4 className="font-bold text-gray-900 mb-6">Contact</h4>
-                        <ul className="space-y-4 text-gray-600 font-medium">
-                            <li>서울특별시 서초구 논현로27길 66</li>
-                            <li>02-1234-5678</li>
-                            <li>contact@icanai.com</li>
-                        </ul>
-                    </div>
+                    <p className="text-white/30 max-w-sm text-sm font-medium leading-[1.8]">
+                        독창적인 AI 앱 포트폴리오를 전시하고 라이선스 거래를 연결하는 차세대 비즈니스 통합 플랫폼입니다. 최상의 기술력과 신뢰를 바탕으로 비즈니스의 미래를 함께 설계합니다.
+                    </p>
                 </div>
 
-                <div className="border-t border-gray-200 pt-8 text-center text-gray-500 text-sm">
-                    <p>© {new Date().getFullYear()} icanagi. All rights reserved.</p>
+                <div className="md:col-span-3">
+                    <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-10">Quick Lists</h4>
+                    <ul className="space-y-6 text-sm font-black text-white/70 tracking-widest uppercase">
+                        <li><Link to="/" className="hover:text-primary transition-all flex items-center gap-2 group"><div className="w-1.5 h-1.5 bg-primary/40 rounded-full group-hover:scale-150 transition-all"></div>홈</Link></li>
+                        <li><a href="/#portfolio" className="hover:text-primary transition-all flex items-center gap-2 group"><div className="w-1.5 h-1.5 bg-primary/40 rounded-full group-hover:scale-150 transition-all"></div>포트폴리오</a></li>
+                        <li><Link to="#" className="hover:text-primary transition-all flex items-center gap-2 group" onClick={() => alert('준비 중인 서비스입니다.')}><div className="w-1.5 h-1.5 bg-primary/40 rounded-full group-hover:scale-150 transition-all"></div>공지사항</Link></li>
+                        <li><Link to="/login" className="hover:text-primary transition-all flex items-center gap-2 group"><div className="w-1.5 h-1.5 bg-primary/40 rounded-full group-hover:scale-150 transition-all"></div>관리자 모드</Link></li>
+                    </ul>
+                </div>
+
+                <div className="md:col-span-4">
+                    <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-10">Contact Hub</h4>
+                    <ul className="space-y-6 text-sm font-bold text-white/40 leading-loose">
+                        <li className="flex items-start gap-4"><div className="w-2 h-2 rounded-full bg-primary/20 mt-2"></div>서울특별시 서초구 논현로27길 66</li>
+                        <li className="flex items-start gap-4"><div className="w-2 h-2 rounded-full bg-primary/20 mt-2"></div>02-1234-5678</li>
+                        <li className="flex items-start gap-4"><div className="w-2 h-2 rounded-full bg-primary/20 mt-2"></div>contact@icanai.com</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                <p className="text-white/20 text-[10px] font-black tracking-[0.3em] uppercase">
+                    © {new Date().getFullYear()} ICAN AI. All rights reserved.
+                </p>
+                <div className="flex space-x-8 text-white/20 text-[10px] font-black uppercase tracking-widest">
+                    <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+                    <Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
                 </div>
             </div>
         </footer>

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Rocket, Cpu } from 'lucide-react';
+import { useToast } from './ToastContext';
 
 const Header = () => {
+  const { showToast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
@@ -17,9 +19,9 @@ const Header = () => {
 
   const navItems = [
     { name: '홈', path: '/' },
-    { name: '포트폴리오', path: '/portfolio' },
-    { name: '공지사항', path: '#notice', onClick: () => alert('준비 중인 서비스입니다.') },
-    { name: '문의하기', path: '#contact', onClick: () => alert('문의 사항은 contact@icanagi.com으로 보내주세요.') },
+    { name: '포트폴리오', path: '/#portfolio' },
+    { name: '공지사항', path: '#notice', onClick: () => showToast('준비 중인 서비스입니다.') },
+    { name: '문의하기', path: '/inquiry' },
   ];
 
   return (

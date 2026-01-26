@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Mail, ArrowRight, Cpu, ShieldCheck } from 'lucide-react';
+import { useToast } from '../components/ToastContext';
 
 const LoginPage = () => {
+    const { showToast } = useToast();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
@@ -12,7 +14,7 @@ const LoginPage = () => {
         if (email === 'ilikepeople@icloud.com' && password === '1111') {
             navigate('/admin');
         } else {
-            alert('이메일 또는 비밀번호가 올바르지 않습니다.');
+            showToast('이메일 또는 비밀번호가 올바르지 않습니다.');
         }
     };
 
