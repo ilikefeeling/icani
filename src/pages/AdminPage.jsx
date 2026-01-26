@@ -10,7 +10,7 @@ const AdminPage = () => {
 
     const [isEditing, setIsEditing] = useState(null);
     const [formData, setFormData] = useState({
-        title: '', desc: '', price: '', category: '', image: '', features: []
+        title: '', desc: '', price: '', category: 'Design', image: '', features: [], link: '', linkType: 'external'
     });
 
     useEffect(() => {
@@ -58,7 +58,9 @@ const AdminPage = () => {
         setFormData({
             title: '', desc: '', price: '', category: 'Design',
             image: 'https://images.unsplash.com/photo-1675271591211-126ad94e495d?auto=format&fit=crop&q=80&w=600',
-            features: []
+            features: [],
+            link: '',
+            linkType: 'external'
         });
     };
 
@@ -180,6 +182,24 @@ const AdminPage = () => {
                                         </select>
                                         <textarea placeholder="Technical Specification..." rows="3" className="w-full p-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-white font-medium" value={formData.desc} onChange={e => setFormData({ ...formData, desc: e.target.value })} />
                                         <input type="text" placeholder="License Fee (e.g. 150,000)" className="w-full p-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-primary font-black uppercase tracking-widest" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} />
+
+                                        <div className="grid grid-cols-3 gap-2">
+                                            <select
+                                                className="col-span-1 p-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-white/70 font-bold text-xs"
+                                                value={formData.linkType}
+                                                onChange={e => setFormData({ ...formData, linkType: e.target.value })}
+                                            >
+                                                <option value="external">홈페이지(Link)</option>
+                                                <option value="internal">상세페이지(App)</option>
+                                            </select>
+                                            <input
+                                                type="text"
+                                                placeholder={formData.linkType === 'external' ? "www.kbsmoon.com" : "/detail/1"}
+                                                className="col-span-2 p-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-white font-medium text-sm"
+                                                value={formData.link}
+                                                onChange={e => setFormData({ ...formData, link: e.target.value })}
+                                            />
+                                        </div>
                                     </div>
 
                                     <button type="submit" className="btn-primary w-full py-5 text-lg"><Save size={20} className="inline-block mr-2" /><span>{isEditing === 'new' ? 'Initialize' : 'Commit Changes'}</span></button>

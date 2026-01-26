@@ -176,12 +176,31 @@ const LandingPage = () => {
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
                         {filteredApps.map((app) => (
                             <div key={app.id} className="glass-card group overflow-hidden hover:border-primary/40 transition-all duration-700 flex flex-col border border-white/5 p-4 bg-white/[0.02]">
-                                <div className="relative aspect-[16/10] rounded-2xl overflow-hidden mb-6">
+                                <div
+                                    className="relative aspect-[16/10] rounded-2xl overflow-hidden mb-6 cursor-pointer group/img"
+                                    onClick={() => {
+                                        if (app.link) {
+                                            if (app.linkType === 'internal') {
+                                                window.location.href = app.link;
+                                            } else {
+                                                const url = app.link.startsWith('http') ? app.link : `https://${app.link}`;
+                                                window.open(url, '_blank');
+                                            }
+                                        } else {
+                                            showToast('상세 페이지 준비 중입니다!', 'info');
+                                        }
+                                    }}
+                                >
                                     <img
                                         src={app.image}
                                         alt={app.title}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                                        className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-1000"
                                     />
+                                    <div className="absolute inset-0 bg-primary/0 group-hover/img:bg-primary/10 transition-colors flex items-center justify-center">
+                                        <div className="opacity-0 group-hover/img:opacity-100 transform translate-y-4 group-hover/img:translate-y-0 transition-all duration-500 bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-2xl">
+                                            <Globe className="text-primary" size={24} />
+                                        </div>
+                                    </div>
                                     <div className="absolute top-4 right-4 py-1.5 px-3 bg-black/60 backdrop-blur-md border border-white/10 rounded-full text-[10px] font-black text-primary uppercase tracking-widest">
                                         {app.category}
                                     </div>
