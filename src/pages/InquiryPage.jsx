@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Cpu, Sparkles, CheckCircle2, ArrowRight, MessageSquare, Rocket, BarChart3, Zap, ShieldCheck, ChevronLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useToast } from '../components/ToastContext';
 
 const InquiryPage = () => {
@@ -15,9 +15,23 @@ const InquiryPage = () => {
         message: ''
     });
 
+    const location = useLocation();
+
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, []);
+
+        // Check for product parameter in URL
+        const params = new URLSearchParams(location.search);
+        const product = params.get('product');
+        if (product) {
+            setFormData(prev => ({
+                ...prev,
+                message: `[${product}] 상품 도입 및 구매 관련 상담을 요청합니다.`,
+                package: 'Premium' // 추천 패키지 자동 선택
+            }));
+            showToast(`${product} 상품을 선택하셨습니다.`, 'success');
+        }
+    }, [location]);
 
 
     const aiOptions = [

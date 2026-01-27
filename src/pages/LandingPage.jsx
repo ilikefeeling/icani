@@ -217,10 +217,13 @@ const LandingPage = () => {
                                             <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">License Price</p>
                                             <p className="text-2xl font-black text-white">₩{app.price}</p>
                                         </div>
-                                        <button className="btn-primary !px-6 !py-3 !text-sm flex items-center space-x-2">
+                                        <Link
+                                            to={`/inquiry?product=${encodeURIComponent(app.title)}`}
+                                            className="btn-primary !px-6 !py-3 !text-sm flex items-center space-x-2"
+                                        >
                                             <span>구매하기</span>
                                             <ArrowRight size={16} />
-                                        </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
