@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Cpu, Sparkles, CheckCircle2, ArrowRight, MessageSquare, Rocket, BarChart3, Zap, ShieldCheck, ChevronLeft } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useToast } from '../components/ToastContext';
+import { useRef } from 'react';
 
 const InquiryPage = () => {
     const { showToast } = useToast();
@@ -15,21 +16,29 @@ const InquiryPage = () => {
         message: ''
     });
 
+    const formRef = useRef(null);
     const location = useLocation();
 
     useEffect(() => {
-        window.scrollTo(0, 0);
-
-        // Check for product parameter in URL
         const params = new URLSearchParams(location.search);
         const product = params.get('product');
+
         if (product) {
             setFormData(prev => ({
                 ...prev,
-                message: `[${product}] 상품 도입 및 구매 관련 상담을 요청합니다.`,
-                package: 'Premium' // 추천 패키지 자동 선택
+                projectType: 'launch', // 상품 선택 시 '신규 서비스 런칭' 자동 선택
+                message: `[${product}] 상품 도입 및 기술 지원 관련 상담을 요청합니다.`,
+                package: 'Premium'
             }));
-            showToast(`${product} 상품을 선택하셨습니다.`, 'success');
+
+            // 페이지 로딩 후 폼 위치로 부드럽게 스크롤
+            setTimeout(() => {
+                formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+
+            showToast(`${product} 상품 상담 준비가 완료되었습니다.`, 'success');
+        } else {
+            window.scrollTo(0, 0);
         }
     }, [location]);
 
@@ -119,7 +128,7 @@ const InquiryPage = () => {
                 </div>
             </header>
 
-            <main className="container mx-auto px-6 max-w-5xl relative z-10">
+            <main className="container mx-auto px-6 max-w-5xl relative z-10" ref={formRef}>
                 <form onSubmit={handleSubmit} className="space-y-16">
                     {/* Step 1: Filter & Objective */}
                     <div className="glass-card p-10 md:p-16 space-y-12">
