@@ -253,7 +253,10 @@ const LandingPage = () => {
                                 </div>
                             </div>
 
-                            <Link to="/inquiry" className="btn-primary text-xl px-16 py-6 rounded-2xl shadow-[0_0_60px_rgba(0,224,255,0.5)] transform hover:scale-105 transition-all text-center">
+                            <Link
+                                to="/inquiry"
+                                className="btn-primary text-xl px-16 py-6 rounded-2xl shadow-[0_0_60px_rgba(0,224,255,0.5)] transform hover:scale-105 transition-all text-center relative z-50 inline-block cursor-pointer"
+                            >
                                 의뢰하기
                             </Link>
 

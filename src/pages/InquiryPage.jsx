@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Cpu, Sparkles, CheckCircle2, ArrowRight, MessageSquare, Rocket, BarChart3, Zap, ShieldCheck, ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useToast } from '../components/ToastContext';
@@ -14,6 +14,11 @@ const InquiryPage = () => {
         consultingNeeded: false,
         message: ''
     });
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
 
     const aiOptions = [
         { id: 'nlp', label: '자연어 처리 (NLP)', icon: <MessageSquare size={16} /> },
@@ -84,9 +89,9 @@ const InquiryPage = () => {
                                 <span>Premium AI Development</span>
                             </div>
                             <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight">
-                                귀하의 비즈니스에 <br />
-                                <span className="text-glow">AI 수익 엔진</span>을 <br />
-                                장착하십시오
+                                지금 필요한 App을 <span className="text-glow text-primary">주문하십시오.</span> <br />
+                                당신의 비즈니스에 <br />
+                                <span className="text-glow text-primary">AI를 장착</span>하십시오
                             </h1>
                             <p className="text-white/50 text-lg md:text-xl font-medium leading-relaxed">
                                 단순한 코딩을 넘어, 수익이 날 수밖에 없는 구조적 비즈니스를 설계합니다. <br />
