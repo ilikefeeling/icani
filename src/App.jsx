@@ -7,6 +7,7 @@ import AdminPage from './pages/AdminPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import InquiryPage from './pages/InquiryPage';
+import OrderPage from './pages/OrderPage';
 
 import { ToastProvider } from './components/ToastContext';
 
@@ -23,6 +24,7 @@ function App() {
             <Route path="/privacy" element={<PrivacyPolicyPage />} />
             <Route path="/terms" element={<TermsOfServicePage />} />
             <Route path="/inquiry" element={<InquiryPage />} />
+            <Route path="/order" element={<OrderPage />} />
           </Routes>
         </Layout>
       </BrowserRouter>

@@ -218,7 +218,7 @@ const LandingPage = () => {
                                             <p className="text-2xl font-black text-white">₩{app.price}</p>
                                         </div>
                                         <Link
-                                            to={`/inquiry?product=${encodeURIComponent(app.title)}`}
+                                            to={`/order?product=${encodeURIComponent(app.title)}`}
                                             className="btn-primary !px-6 !py-3 !text-sm flex items-center space-x-2 shadow-glow-sm hover:shadow-glow-md transition-shadow"
                                         >
                                             <span>구매하기</span>

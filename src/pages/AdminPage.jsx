@@ -237,11 +237,17 @@ const AdminPage = () => {
                                             <div className="space-y-6 flex-grow">
                                                 <div className="flex flex-wrap items-center gap-4">
                                                     <span className="text-[10px] font-black text-white/40 p-2 bg-white/5 border border-white/10 rounded-lg uppercase tracking-widest">{inquiry.date}</span>
-                                                    <span className={`text-[10px] font-black p-2 rounded-lg uppercase tracking-widest border ${inquiry.package === 'Enterprise' ? 'bg-red-500/10 border-red-500/20 text-red-500' :
-                                                        inquiry.package === 'Premium' ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-white/10 border-white/20 text-white/60'
-                                                        }`}>
-                                                        {inquiry.package} Package
-                                                    </span>
+                                                    {inquiry.type === 'Purchase' ? (
+                                                        <span className="text-[10px] font-black bg-primary/20 border border-primary/40 text-primary p-2 rounded-lg uppercase tracking-[0.15em] flex items-center gap-2 animate-pulse shadow-glow-sm">
+                                                            <Package size={12} /> Product Purchase
+                                                        </span>
+                                                    ) : (
+                                                        <span className={`text-[10px] font-black p-2 rounded-lg uppercase tracking-widest border ${inquiry.package === 'Enterprise' ? 'bg-red-500/10 border-red-500/20 text-red-500' :
+                                                            inquiry.package === 'Premium' ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-white/10 border-white/20 text-white/60'
+                                                            }`}>
+                                                            {inquiry.package} Package
+                                                        </span>
+                                                    )}
                                                     {inquiry.consultingNeeded && (
                                                         <span className="text-[10px] font-black bg-purple-500/10 border border-purple-500/20 text-purple-400 p-2 rounded-lg uppercase tracking-widest">BM Consulting Required</span>
                                                     )}
@@ -267,16 +273,26 @@ const AdminPage = () => {
                                                     </div>
                                                     <div className="space-y-4">
                                                         <div className="flex flex-col gap-2">
-                                                            <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Selected AI Features</span>
-                                                            <div className="flex flex-wrap gap-2">
-                                                                {inquiry.aiFeatures.length > 0 ? inquiry.aiFeatures.map(f => (
-                                                                    <span key={f} className="text-[10px] font-bold text-primary/80 bg-primary/5 px-2 py-1 rounded border border-primary/10 uppercase tracking-tighter">{f}</span>
-                                                                )) : <span className="text-[10px] text-white/20">None</span>}
-                                                            </div>
+                                                            <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">
+                                                                {inquiry.type === 'Purchase' ? "Customer Contact" : "Selected AI Features"}
+                                                            </span>
+                                                            {inquiry.type === 'Purchase' ? (
+                                                                <span className="text-sm font-bold text-primary">{inquiry.phone || "No Phone Info"}</span>
+                                                            ) : (
+                                                                <div className="flex flex-wrap gap-2">
+                                                                    {inquiry.aiFeatures.length > 0 ? inquiry.aiFeatures.map(f => (
+                                                                        <span key={f} className="text-[10px] font-bold text-primary/80 bg-primary/5 px-2 py-1 rounded border border-primary/10 uppercase tracking-tighter">{f}</span>
+                                                                    )) : <span className="text-[10px] text-white/20">None</span>}
+                                                                </div>
+                                                            )}
                                                         </div>
                                                         <div className="flex flex-col gap-1">
-                                                            <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Project Goal</span>
-                                                            <span className="text-sm font-bold text-white/80">{inquiry.projectType || "General"}</span>
+                                                            <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">
+                                                                {inquiry.type === 'Purchase' ? "Ordered Product" : "Project Goal"}
+                                                            </span>
+                                                            <span className="text-sm font-bold text-white/80">
+                                                                {inquiry.type === 'Purchase' ? `${inquiry.productName} (₩${inquiry.price})` : (inquiry.projectType || "General")}
+                                                            </span>
                                                         </div>
                                                     </div>
                                                 </div>
