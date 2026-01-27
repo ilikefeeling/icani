@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Save, X, Upload, LayoutDashboard, Database, Cpu, MessageSquare, Mail, CheckCircle, BookmarkCheck, Info } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, Upload, LayoutDashboard, Database, Cpu, MessageSquare, Mail, CheckCircle, BookmarkCheck, Info, Package } from 'lucide-react';
 import { useToast } from '../components/ToastContext';
 
 const AdminPage = () => {
