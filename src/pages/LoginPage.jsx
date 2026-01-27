@@ -11,10 +11,12 @@ const LoginPage = () => {
 
     const handleLogin = (e) => {
         e.preventDefault();
-        if (email === 'ilikepeople@icloud.com' && password === '1111') {
+        const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || '1111'; // 로컬 환경 대비 기본값 유지 가능 (배포 시에는 환경변수 우선)
+        if (email === 'ilikepeople@icloud.com' && password === ADMIN_PASSWORD) {
             navigate('/admin');
+            showToast('성공적으로 접속되었습니다.', 'success');
         } else {
-            showToast('이메일 또는 비밀번호가 올바르지 않습니다.');
+            showToast('이메일 또는 액세스 키가 올바르지 않습니다.', 'error');
         }
     };
 
