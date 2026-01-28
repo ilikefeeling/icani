@@ -49,10 +49,11 @@ const PortfolioPage = () => {
                 const localApps = (storedApps && !isMigrationDone) ? JSON.parse(storedApps) : [];
 
                 if (data && data.length > 0) {
-                    setApps([...data, ...localApps]);
+                    setApps(data);
+                    localStorage.setItem('ican_migration_done', 'true');
                 } else if (localApps.length > 0) {
                     setApps(localApps);
-                } else if (!isMigrationDone && (!data || data.length === 0)) {
+                } else if (!isMigrationDone) {
                     setApps(INITIAL_APPS);
                 } else {
                     setApps([]);

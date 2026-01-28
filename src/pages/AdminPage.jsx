@@ -129,11 +129,12 @@ const AdminPage = () => {
     };
 
     const clearLocalData = () => {
-        if (window.confirm('이 기기의 로컬 캐시(LocalStorage)를 모두 초기화하시겠습니까? 서버 데이터는 유지됩니다.')) {
+        if (window.confirm('이 기기의 로컬 캐시를 초기화하고 서버 데이터만 불러오시겠습니까?')) {
             localStorage.removeItem('ican_apps');
             localStorage.removeItem('ican_inquiries');
+            // 강제로 '마이그레이션 완료' 상태로 만들어 샘플이 다시안나오게함
             localStorage.setItem('ican_migration_done', 'true');
-            showToast('로컬 데이터가 초기화되었습니다.', 'success');
+            showToast('기기 캐시가 정리되었습니다. 서버 데이터를 불러옵니다.', 'success');
             setTimeout(() => window.location.reload(), 1000);
         }
     };

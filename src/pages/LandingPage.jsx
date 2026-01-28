@@ -52,16 +52,18 @@ const LandingPage = () => {
                 const localApps = (storedApps && !isMigrationDone) ? JSON.parse(storedApps) : [];
 
                 if (data && data.length > 0) {
-                    // 서버 데이터가 최우선, 로컬 데이터는 아직 이관 안된 경우만 합침
-                    setApps([...data, ...localApps]);
+                    // 서버 데이터가 최우선
+                    setApps(data);
+                    // 서버 데이터가 확인되면 마이그레이션 완료로 간주하여 샘플 재발생 방지
+                    localStorage.setItem('ican_migration_done', 'true');
                 } else if (localApps.length > 0) {
-                    // 서버는 비었지만 로컬에 데이터가 있는 경우 (이관 전)
+                    // 서버는 비었지만 로컬에 데이터가 있는 경우 (이관 전 기기)
                     setApps(localApps);
-                } else if (!isMigrationDone && (!data || data.length === 0)) {
-                    // 서버도 비었고, 이관한 적도 없는 첫 방문자만 샘플 표시
+                } else if (!isMigrationDone) {
+                    // 완전 첫 방문자 혹은 마이그레이션 전인 경우만 샘플 표시
                     setApps(INITIAL_APPS);
                 } else {
-                    // 사용자가 모든 데이터를 삭제한 경우 (빈 화면 유지)
+                    // 사용자가 모든 데이터를 삭제했거나 이관이 끝난 빈 상태
                     setApps([]);
                 }
             } catch (err) {
