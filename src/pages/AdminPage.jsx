@@ -82,13 +82,36 @@ const AdminPage = () => {
             const legacyInquiries = JSON.parse(localStorage.getItem('ican_inquiries') || '[]');
 
             if (legacyApps.length > 0) {
-                const appsToInsert = legacyApps.map(({ id, ...rest }) => rest);
+                const appsToInsert = legacyApps.map(({ id, ...rest }) => ({
+                    title: rest.title,
+                    desc: rest.desc,
+                    price: rest.price,
+                    category: rest.category,
+                    image: rest.image,
+                    link: rest.link,
+                    linkType: rest.linkType,
+                    features: rest.features || []
+                }));
                 const { error: appErr } = await supabase.from('apps').insert(appsToInsert);
                 if (appErr) throw appErr;
             }
 
             if (legacyInquiries.length > 0) {
-                const inquiriesToInsert = legacyInquiries.map(({ id, ...rest }) => rest);
+                const inquiriesToInsert = legacyInquiries.map(({ id, ...rest }) => ({
+                    name: rest.name,
+                    email: rest.email,
+                    phone: rest.phone,
+                    message: rest.message,
+                    type: rest.type || 'Inquiry',
+                    package: rest.package,
+                    consultingNeeded: rest.consultingNeeded,
+                    aiFeatures: rest.aiFeatures,
+                    projectType: rest.projectType,
+                    productName: rest.productName,
+                    price: rest.price,
+                    date: rest.date,
+                    status: rest.status || 'Pending'
+                }));
                 const { error: inqErr } = await supabase.from('inquiries').insert(inquiriesToInsert);
                 if (inqErr) throw inqErr;
             }
