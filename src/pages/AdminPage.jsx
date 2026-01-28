@@ -179,13 +179,16 @@ const AdminPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            // id와 created_at은 identity/system 컬럼이므로 업데이트/인서트 시 제외해야 함
+            const { id, created_at, ...submitData } = formData;
+
             if (isEditing === 'new') {
-                const { data, error } = await supabase.from('apps').insert([{ ...formData }]).select();
+                const { data, error } = await supabase.from('apps').insert([submitData]).select();
                 if (error) throw error;
                 setApps([...apps, data[0]]);
                 showToast('성공적으로 등록되었습니다.', 'success');
             } else {
-                const { data, error } = await supabase.from('apps').update(formData).eq('id', isEditing).select();
+                const { data, error } = await supabase.from('apps').update(submitData).eq('id', isEditing).select();
                 if (error) throw error;
                 setApps(apps.map(a => a.id === isEditing ? data[0] : a));
                 showToast('성공적으로 수정되었습니다.', 'success');
