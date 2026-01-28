@@ -13,6 +13,15 @@ const AdminPage = () => {
     const [formData, setFormData] = useState({
         title: '', desc: '', price: '', category: 'Design', image: '', features: [], link: '', linkType: 'external'
     });
+    const [hasLegacyData, setHasLegacyData] = useState(false);
+
+    useEffect(() => {
+        const legacyApps = localStorage.getItem('ican_apps');
+        const legacyInquiries = localStorage.getItem('ican_inquiries');
+        if (legacyApps || legacyInquiries) {
+            setHasLegacyData(true);
+        }
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -65,7 +74,37 @@ const AdminPage = () => {
         }
     };
 
+    const handleMigration = async () => {
+        if (!window.confirm('기존 브라우저(LocalStorage)의 데이터를 서버(Supabase)로 이관하시겠습니까? 중복 데이터가 생성될 수 있습니다.')) return;
+
+        try {
+            const legacyApps = JSON.parse(localStorage.getItem('ican_apps') || '[]');
+            const legacyInquiries = JSON.parse(localStorage.getItem('ican_inquiries') || '[]');
+
+            if (legacyApps.length > 0) {
+                const appsToInsert = legacyApps.map(({ id, ...rest }) => rest);
+                const { error: appErr } = await supabase.from('apps').insert(appsToInsert);
+                if (appErr) throw appErr;
+            }
+
+            if (legacyInquiries.length > 0) {
+                const inquiriesToInsert = legacyInquiries.map(({ id, ...rest }) => rest);
+                const { error: inqErr } = await supabase.from('inquiries').insert(inquiriesToInsert);
+                if (inqErr) throw inqErr;
+            }
+
+            showToast('데이터 이관이 완료되었습니다! 페이지를 새로고침합니다.', 'success');
+            localStorage.removeItem('ican_apps');
+            localStorage.removeItem('ican_inquiries');
+            setTimeout(() => window.location.reload(), 2000);
+        } catch (err) {
+            console.error('Migration error:', err);
+            showToast('이관 중 오류가 발생했습니다.', 'error');
+        }
+    };
+
     const handleEdit = (app) => {
+
         setIsEditing(app.id);
         setFormData(app);
     };
@@ -169,6 +208,24 @@ const AdminPage = () => {
                     </button>
                 )}
             </div>
+
+            {hasLegacyData && (
+                <div className="mb-12 p-6 glass-card border-primary/30 bg-primary/5 flex flex-col md:flex-row items-center justify-between gap-6 animate-pulse">
+                    <div className="flex items-center gap-4 text-primary">
+                        <Database size={24} />
+                        <div>
+                            <p className="font-black">기존 데이터(LocalStorage)가 발견되었습니다!</p>
+                            <p className="text-xs text-white/50">현재 브라우저에 저장된 프로젝트와 문의 내역을 전체 기기에서 볼 수 있도록 서버로 옮길 수 있습니다.</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={handleMigration}
+                        className="btn-primary !py-2 !px-6 text-xs whitespace-nowrap"
+                    >
+                        데이터 서버로 이관하기
+                    </button>
+                </div>
+            )}
 
             {activeTab === 'portfolio' ? (
                 <div className="grid lg:grid-cols-12 gap-10">
