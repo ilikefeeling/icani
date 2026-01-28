@@ -40,6 +40,7 @@ const AdminPage = () => {
                 if (inquiriesError) throw inquiriesError;
                 setInquiries(inquiriesData || []);
             } catch (err) {
+                if (err.name === 'AbortError') return;
                 console.error('Error fetching data:', err);
                 showToast('데이터를 불러오는데 실패했습니다.', 'error');
             }
@@ -119,10 +120,21 @@ const AdminPage = () => {
             showToast('데이터 이관이 완료되었습니다! 페이지를 새로고침합니다.', 'success');
             localStorage.removeItem('ican_apps');
             localStorage.removeItem('ican_inquiries');
+            localStorage.setItem('ican_migration_done', 'true'); // 마이그레이션 완료 마킹
             setTimeout(() => window.location.reload(), 2000);
         } catch (err) {
             console.error('Migration error:', err);
             showToast('이관 중 오류가 발생했습니다.', 'error');
+        }
+    };
+
+    const clearLocalData = () => {
+        if (window.confirm('이 기기의 로컬 캐시(LocalStorage)를 모두 초기화하시겠습니까? 서버 데이터는 유지됩니다.')) {
+            localStorage.removeItem('ican_apps');
+            localStorage.removeItem('ican_inquiries');
+            localStorage.setItem('ican_migration_done', 'true');
+            showToast('로컬 데이터가 초기화되었습니다.', 'success');
+            setTimeout(() => window.location.reload(), 1000);
         }
     };
 
@@ -189,7 +201,7 @@ const AdminPage = () => {
 
     return (
         <div className="container mx-auto px-6 py-20 min-h-screen">
-            <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16">
                 <div className="flex items-center space-x-6">
                     <div className="p-4 bg-primary/10 border border-primary/30 text-primary rounded-2xl shadow-[0_0_30px_rgba(0,224,255,0.1)]">
                         <LayoutDashboard size={32} />
@@ -199,37 +211,38 @@ const AdminPage = () => {
                         <p className="text-white/40 font-bold uppercase tracking-widest text-xs mt-1">포트폴리오 실시간 관리 센터</p>
                     </div>
                 </div>
-                <div className="flex bg-white/5 p-1 rounded-2xl border border-white/5">
+
+                <div className="flex flex-wrap items-center gap-4">
                     <button
-                        onClick={() => setActiveTab('portfolio')}
-                        className={`px-6 py-3 rounded-xl text-sm font-black transition-all ${activeTab === 'portfolio' ? 'bg-primary text-black' : 'text-white/40 hover:text-white'}`}
+                        onClick={clearLocalData}
+                        className="px-6 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-xs font-black text-white/40 hover:text-white transition-all uppercase tracking-widest flex items-center gap-2"
+                        title="기기 데이터 초기화"
                     >
-                        Portfolio
+                        <Trash2 size={16} /> 기기 캐시 초기화
                     </button>
-                    <button
-                        onClick={() => setActiveTab('inquiries')}
-                        className={`px-6 py-3 rounded-xl text-sm font-black transition-all relative ${activeTab === 'inquiries' ? 'bg-primary text-black' : 'text-white/40 hover:text-white'}`}
-                    >
-                        Inquiry Feed
-                        {inquiries.filter(i => i.status !== 'Archived').length > 0 && <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-[#05060b]"></span>}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('saved')}
-                        className={`px-6 py-3 rounded-xl text-sm font-black transition-all relative ${activeTab === 'saved' ? 'bg-primary text-black' : 'text-white/40 hover:text-white'}`}
-                    >
-                        Saved Feed
-                        {inquiries.filter(i => i.status === 'Archived').length > 0 && <span className="absolute top-1 right-1 w-2 h-2 bg-green-400 rounded-full border border-[#05060b]"></span>}
-                    </button>
+                    <div className="flex bg-white/5 p-1 rounded-2xl border border-white/5">
+                        <button
+                            onClick={() => setActiveTab('portfolio')}
+                            className={`px-6 py-3 rounded-xl text-sm font-black transition-all ${activeTab === 'portfolio' ? 'bg-primary text-black' : 'text-white/40 hover:text-white'}`}
+                        >
+                            Portfolio
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('inquiry')}
+                            className={`px-6 py-3 rounded-xl text-sm font-black transition-all relative ${activeTab === 'inquiry' ? 'bg-primary text-black' : 'text-white/40 hover:text-white'}`}
+                        >
+                            Inquiry Feed
+                            {inquiries.filter(i => i.status !== 'Archived').length > 0 && <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-[#05060b]"></span>}
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('saved')}
+                            className={`px-6 py-3 rounded-xl text-sm font-black transition-all relative ${activeTab === 'saved' ? 'bg-primary text-black' : 'text-white/40 hover:text-white'}`}
+                        >
+                            Saved Feed
+                            {inquiries.filter(i => i.status === 'Archived').length > 0 && <span className="absolute top-1 right-1 w-2 h-2 bg-green-400 rounded-full border border-[#05060b]"></span>}
+                        </button>
+                    </div>
                 </div>
-                {activeTab === 'portfolio' && (
-                    <button
-                        onClick={handleAddNew}
-                        className="btn-primary flex items-center space-x-2 group"
-                    >
-                        <Plus size={20} />
-                        <span>New AI Engine</span>
-                    </button>
-                )}
             </div>
 
             {hasLegacyData && (
@@ -249,6 +262,18 @@ const AdminPage = () => {
                     </button>
                 </div>
             )}
+
+            <div className="flex justify-end mb-8">
+                {activeTab === 'portfolio' && (
+                    <button
+                        onClick={handleAddNew}
+                        className="btn-primary flex items-center space-x-2 group"
+                    >
+                        <Plus size={20} />
+                        <span>New AI Engine</span>
+                    </button>
+                )}
+            </div>
 
             {activeTab === 'portfolio' ? (
                 <div className="grid lg:grid-cols-12 gap-10">

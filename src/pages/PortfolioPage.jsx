@@ -44,29 +44,22 @@ const PortfolioPage = () => {
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
-                let finalApps = [];
-                if (data && data.length > 0) {
-                    finalApps = [...data];
-                }
-
+                const isMigrationDone = localStorage.getItem('ican_migration_done') === 'true';
                 const storedApps = localStorage.getItem('ican_apps');
-                if (storedApps) {
-                    const parsedApps = JSON.parse(storedApps);
-                    if (parsedApps.length > 0) {
-                        setApps([...finalApps, ...parsedApps]);
-                    } else if (finalApps.length > 0) {
-                        setApps(finalApps);
-                    } else {
-                        setApps(INITIAL_APPS);
-                    }
-                } else if (finalApps.length > 0) {
-                    setApps(finalApps);
-                } else {
+                const localApps = (storedApps && !isMigrationDone) ? JSON.parse(storedApps) : [];
+
+                if (data && data.length > 0) {
+                    setApps([...data, ...localApps]);
+                } else if (localApps.length > 0) {
+                    setApps(localApps);
+                } else if (!isMigrationDone && (!data || data.length === 0)) {
                     setApps(INITIAL_APPS);
+                } else {
+                    setApps([]);
                 }
             } catch (err) {
                 console.error('Error fetching apps:', err);
-                setApps(INITIAL_APPS);
+                setApps([]);
             } finally {
                 setLoading(false);
             }

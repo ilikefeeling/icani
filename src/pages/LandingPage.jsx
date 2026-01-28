@@ -47,29 +47,22 @@ const LandingPage = () => {
                     .select('*')
                     .order('created_at', { ascending: false });
 
-                if (error) throw error;
-
-                let finalApps = [];
-                if (data && data.length > 0) {
-                    finalApps = [...data];
-                }
-
-                // 로컬 데이터 병합 (중복 방지 로직 없이 모두 합쳐서 보여줌, 마이그레이션 유도)
+                const isMigrationDone = localStorage.getItem('ican_migration_done') === 'true';
                 const storedApps = localStorage.getItem('ican_apps');
-                if (storedApps) {
-                    const parsedApps = JSON.parse(storedApps);
-                    if (parsedApps.length > 0) {
-                        // 서버 데이터와 로컬 데이터를 합침
-                        setApps([...finalApps, ...parsedApps]);
-                    } else if (finalApps.length > 0) {
-                        setApps(finalApps);
-                    } else {
-                        setApps(INITIAL_APPS);
-                    }
-                } else if (finalApps.length > 0) {
-                    setApps(finalApps);
-                } else {
+                const localApps = (storedApps && !isMigrationDone) ? JSON.parse(storedApps) : [];
+
+                if (data && data.length > 0) {
+                    // 서버 데이터가 최우선, 로컬 데이터는 아직 이관 안된 경우만 합침
+                    setApps([...data, ...localApps]);
+                } else if (localApps.length > 0) {
+                    // 서버는 비었지만 로컬에 데이터가 있는 경우 (이관 전)
+                    setApps(localApps);
+                } else if (!isMigrationDone && (!data || data.length === 0)) {
+                    // 서버도 비었고, 이관한 적도 없는 첫 방문자만 샘플 표시
                     setApps(INITIAL_APPS);
+                } else {
+                    // 사용자가 모든 데이터를 삭제한 경우 (빈 화면 유지)
+                    setApps([]);
                 }
             } catch (err) {
                 console.error('Error fetching apps:', err);
