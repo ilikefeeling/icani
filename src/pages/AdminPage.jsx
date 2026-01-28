@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Save, X, Upload, LayoutDashboard, Database, Cpu, MessageSquare, Mail, CheckCircle, BookmarkCheck, Info, Package } from 'lucide-react';
 import { useToast } from '../components/ToastContext';
+import { supabase } from '../utils/supabaseClient';
 
 const AdminPage = () => {
     const [apps, setApps] = useState([]);
@@ -14,31 +15,54 @@ const AdminPage = () => {
     });
 
     useEffect(() => {
-        const storedApps = localStorage.getItem('ican_apps');
-        if (storedApps) setApps(JSON.parse(storedApps));
+        const fetchData = async () => {
+            try {
+                const { data: appsData, error: appsError } = await supabase
+                    .from('apps')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                if (appsError) throw appsError;
+                setApps(appsData || []);
 
-        const storedInquiries = localStorage.getItem('ican_inquiries');
-        if (storedInquiries) setInquiries(JSON.parse(storedInquiries));
+                const { data: inquiriesData, error: inquiriesError } = await supabase
+                    .from('inquiries')
+                    .select('*')
+                    .order('date', { ascending: false });
+                if (inquiriesError) throw inquiriesError;
+                setInquiries(inquiriesData || []);
+            } catch (err) {
+                console.error('Error fetching data:', err);
+                showToast('데이터를 불러오는데 실패했습니다.', 'error');
+            }
+        };
+
+        fetchData();
     }, []);
 
-    const deleteInquiry = (id) => {
+    const deleteInquiry = async (id) => {
         if (window.confirm('이 의뢰 리포트를 삭제하시겠습니까?')) {
-            const updated = inquiries.filter(i => i.id !== id);
-            setInquiries(updated);
-            localStorage.setItem('ican_inquiries', JSON.stringify(updated));
+            try {
+                const { error } = await supabase.from('inquiries').delete().eq('id', id);
+                if (error) throw error;
+                setInquiries(inquiries.filter(i => i.id !== id));
+                showToast('삭제되었습니다.', 'success');
+            } catch (err) {
+                console.error('Delete error:', err);
+                showToast('삭제 실패했습니다.', 'error');
+            }
         }
     };
 
-    const saveToLocal = (newApps) => {
-        setApps(newApps);
-        localStorage.setItem('ican_apps', JSON.stringify(newApps));
-    };
-
-    const updateInquiryStatus = (id, newStatus) => {
-        const updated = inquiries.map(i => i.id === id ? { ...i, status: newStatus } : i);
-        setInquiries(updated);
-        localStorage.setItem('ican_inquiries', JSON.stringify(updated));
-        showToast('문의 상태가 성공적으로 저장되었습니다.', 'success');
+    const updateInquiryStatus = async (id, newStatus) => {
+        try {
+            const { error } = await supabase.from('inquiries').update({ status: newStatus }).eq('id', id);
+            if (error) throw error;
+            setInquiries(inquiries.map(i => i.id === id ? { ...i, status: newStatus } : i));
+            showToast('문의 상태가 성공적으로 저장되었습니다.', 'success');
+        } catch (err) {
+            console.error('Update error:', err);
+            showToast('상태 업데이트 실패.', 'error');
+        }
     };
 
     const handleEdit = (app) => {
@@ -46,10 +70,17 @@ const AdminPage = () => {
         setFormData(app);
     };
 
-    const handleDelete = (id) => {
+    const handleDelete = async (id) => {
         if (window.confirm('정말 이 앱을 삭제하시겠습니까?')) {
-            const filtered = apps.filter(a => a.id !== id);
-            saveToLocal(filtered);
+            try {
+                const { error } = await supabase.from('apps').delete().eq('id', id);
+                if (error) throw error;
+                setApps(apps.filter(a => a.id !== id));
+                showToast('삭제되었습니다.', 'success');
+            } catch (err) {
+                console.error('App delete error:', err);
+                showToast('삭제 실패했습니다.', 'error');
+            }
         }
     };
 
@@ -64,16 +95,25 @@ const AdminPage = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (isEditing === 'new') {
-            const newApp = { ...formData, id: Date.now() };
-            saveToLocal([...apps, newApp]);
-        } else {
-            const updated = apps.map(a => a.id === isEditing ? formData : a);
-            saveToLocal(updated);
+        try {
+            if (isEditing === 'new') {
+                const { data, error } = await supabase.from('apps').insert([{ ...formData }]).select();
+                if (error) throw error;
+                setApps([...apps, data[0]]);
+                showToast('성공적으로 등록되었습니다.', 'success');
+            } else {
+                const { data, error } = await supabase.from('apps').update(formData).eq('id', isEditing).select();
+                if (error) throw error;
+                setApps(apps.map(a => a.id === isEditing ? data[0] : a));
+                showToast('성공적으로 수정되었습니다.', 'success');
+            }
+            setIsEditing(null);
+        } catch (err) {
+            console.error('Submit error:', err);
+            showToast('저장 중 오류가 발생했습니다.', 'error');
         }
-        setIsEditing(null);
     };
 
     const handleFileChange = (e) => {

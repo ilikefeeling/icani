@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, ArrowLeft, CheckCircle2, CreditCard, User, Mail, Phone, Package, ArrowRight } from 'lucide-react';
 import { useToast } from '../components/ToastContext';
+import { supabase } from '../utils/supabaseClient';
 
 const OrderPage = () => {
     const { showToast } = useToast();
@@ -20,39 +21,57 @@ const OrderPage = () => {
         const params = new URLSearchParams(location.search);
         const productName = params.get('product');
 
-        // Get product details from localStorage or INITIAL_APPS
-        const storedApps = JSON.parse(localStorage.getItem('ican_apps') || '[]');
-        const product = storedApps.find(app => app.title === productName);
+        const fetchProduct = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('apps')
+                    .select('*')
+                    .eq('title', productName)
+                    .single();
 
-        if (product) {
-            setProductInfo(product);
-        } else if (productName) {
-            setProductInfo({ title: productName, price: '상담 후 결정', image: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=600' });
+                if (error || !data) {
+                    if (productName) {
+                        setProductInfo({ title: productName, price: '상담 후 결정', image: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=600' });
+                    } else {
+                        navigate('/');
+                    }
+                } else {
+                    setProductInfo(data);
+                }
+            } catch (err) {
+                console.error('Fetch product error:', err);
+                navigate('/');
+            }
+        };
+
+        if (productName) {
+            fetchProduct();
         } else {
             navigate('/');
         }
     }, [location, navigate]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const newOrder = {
-            ...formData,
-            id: Date.now(),
-            productName: productInfo.title,
-            price: productInfo.price,
-            date: new Date().toLocaleString(),
-            type: 'Purchase', // 구분값 추가
-            status: 'Pending'
-        };
+        try {
+            const { error } = await supabase.from('inquiries').insert([{
+                ...formData,
+                productName: productInfo.title,
+                price: productInfo.price,
+                date: new Date().toLocaleString(),
+                type: 'Purchase',
+                status: 'Pending'
+            }]);
 
-        const existingInquiries = JSON.parse(localStorage.getItem('ican_inquiries') || '[]');
-        localStorage.setItem('ican_inquiries', JSON.stringify([newOrder, ...existingInquiries]));
+            if (error) throw error;
 
-        showToast(`${productInfo.title} 주문이 접수되었습니다! 곧 연락드릴게요.`, 'success');
-
-        // redirect to success or home
-        setTimeout(() => navigate('/'), 2000);
+            showToast(`${productInfo.title} 주문이 접수되었습니다! 곧 연락드릴게요.`, 'success');
+            setTimeout(() => navigate('/'), 2000);
+        } catch (err) {
+            console.error('Order submission error:', err);
+            showToast('주문 접수 중 오류가 발생했습니다.', 'error');
+        }
     };
 
     return (

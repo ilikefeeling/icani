@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { ArrowRight, User, Globe, MessageSquare, Cpu, Sparkles, LayoutGrid, Search, Filter, Info, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useToast } from '../components/ToastContext';
+import { supabase } from '../utils/supabaseClient';
+
 
 const INITIAL_APPS = [
     {
@@ -35,15 +37,33 @@ const LandingPage = () => {
     const [apps, setApps] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const storedApps = localStorage.getItem('ican_apps');
-        if (storedApps) {
-            setApps(JSON.parse(storedApps));
-        } else {
-            setApps(INITIAL_APPS);
-            localStorage.setItem('ican_apps', JSON.stringify(INITIAL_APPS));
-        }
+        const fetchApps = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('apps')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    setApps(data);
+                } else {
+                    // DB가 비어있으면 초기 데이터 사용 및 저장 시도 (관리자만 가능하게 할 수도 있지만 일단 보여주기용)
+                    setApps(INITIAL_APPS);
+                }
+            } catch (err) {
+                console.error('Error fetching apps:', err);
+                setApps(INITIAL_APPS);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchApps();
     }, []);
 
     const filteredApps = apps.filter(app => {
@@ -173,7 +193,8 @@ const LandingPage = () => {
                         </div>
                     </div>
 
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+
                         {filteredApps.map((app) => (
                             <div key={app.id} className="glass-card group overflow-hidden hover:border-primary/40 transition-all duration-700 flex flex-col border border-white/5 p-4 bg-white/[0.02]">
                                 <div

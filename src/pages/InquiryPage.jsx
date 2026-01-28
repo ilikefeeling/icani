@@ -3,6 +3,7 @@ import { Cpu, Sparkles, CheckCircle2, ArrowRight, MessageSquare, Rocket, BarChar
 import { Link, useLocation } from 'react-router-dom';
 import { useToast } from '../components/ToastContext';
 import { useRef } from 'react';
+import { supabase } from '../utils/supabaseClient';
 
 const InquiryPage = () => {
     const { showToast } = useToast();
@@ -56,32 +57,34 @@ const InquiryPage = () => {
         { id: 'Enterprise', title: '수익화 자동화 풀 패키지', price: 'Custom', desc: '비즈니스 모델 설계부터 자동화까지 책임집니다.', features: ['지속적 수익화 콘텐츠 파이프라인', '마케팅 자동화 도구 통합', '1:1 전담 비즈니스 컨설팅'] },
     ];
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Save to localStorage for Admin Page
-        const newInquiry = {
-            ...formData,
-            id: Date.now(),
-            date: new Date().toLocaleString(),
-            status: 'Pending'
-        };
+        try {
+            const { error } = await supabase.from('inquiries').insert([{
+                ...formData,
+                date: new Date().toLocaleString(),
+                status: 'Pending',
+                type: 'Inquiry'
+            }]);
 
-        const existingInquiries = JSON.parse(localStorage.getItem('ican_inquiries') || '[]');
-        localStorage.setItem('ican_inquiries', JSON.stringify([newInquiry, ...existingInquiries]));
+            if (error) throw error;
 
-        showToast('성공적으로 의뢰가 접수되었습니다. 1:1 컨설팅 리포트를 곧 보내드릴게요!', 'success');
+            showToast('성공적으로 의뢰가 접수되었습니다. 1:1 컨설팅 리포트를 곧 보내드릴게요!', 'success');
 
-        // Reset form after success
-        setFormData({
-            name: '',
-            email: '',
-            projectType: '',
-            package: 'Premium',
-            aiFeatures: [],
-            consultingNeeded: false,
-            message: ''
-        });
+            setFormData({
+                name: '',
+                email: '',
+                projectType: '',
+                package: 'Premium',
+                aiFeatures: [],
+                consultingNeeded: false,
+                message: ''
+            });
+        } catch (err) {
+            console.error('Inquiry submission error:', err);
+            showToast('의뢰 접수 중 오류가 발생했습니다.', 'error');
+        }
     };
 
     const toggleAiFeature = (id) => {
