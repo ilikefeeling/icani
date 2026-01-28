@@ -5,7 +5,7 @@ import { useToast } from '../components/ToastContext';
 
 const LoginPage = () => {
     const { showToast } = useToast();
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState('ilikepeople@icloud.com');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
@@ -34,7 +34,7 @@ const LoginPage = () => {
                     <p className="text-white/40 font-medium">관리자 계정으로 접속해 주세요.</p>
                 </div>
 
-                <form onSubmit={handleLogin} className="space-y-8 relative z-10" autoComplete="off">
+                <form onSubmit={handleLogin} className="space-y-8 relative z-10" autoComplete="on">
                     <div className="space-y-3">
                         <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-2">Email Address</label>
                         <div className="relative group">
@@ -42,7 +42,7 @@ const LoginPage = () => {
                             <input
                                 type="email"
                                 required
-                                autoComplete="off"
+                                autoComplete="username"
                                 className="w-full pl-14 pr-6 py-5 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-white font-medium"
                                 placeholder="이메일을 입력하세요"
                                 value={email}
