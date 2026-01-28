@@ -11,7 +11,13 @@ const LoginPage = () => {
 
     const handleLogin = (e) => {
         e.preventDefault();
-        const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || '1111'; // 로컬 환경 대비 기본값 유지 가능 (배포 시에는 환경변수 우선)
+        const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
+        if (!ADMIN_PASSWORD) {
+            console.error('Admin password environment variable is not set!');
+            showToast('시스템 설정 오류입니다. 관리자에게 문의하세요.', 'error');
+            return;
+        }
+
         if (email === 'ilikepeople@icloud.com' && password === ADMIN_PASSWORD) {
             navigate('/admin');
             showToast('성공적으로 접속되었습니다.', 'success');
@@ -30,10 +36,10 @@ const LoginPage = () => {
                         <Cpu size={40} />
                     </div>
                     <h1 className="text-3xl font-black mb-3 tracking-tight">icanagi 비즈니스 허브 로그인</h1>
-                    <p className="text-white/40 font-medium">icanagi 오퍼레이션 센터에 접속하세요.</p>
+                    <p className="text-white/40 font-medium">관리자 계정으로 접속해 주세요.</p>
                 </div>
 
-                <form onSubmit={handleLogin} className="space-y-8 relative z-10">
+                <form onSubmit={handleLogin} className="space-y-8 relative z-10" autoComplete="off">
                     <div className="space-y-3">
                         <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-2">Email Address</label>
                         <div className="relative group">
@@ -41,8 +47,9 @@ const LoginPage = () => {
                             <input
                                 type="email"
                                 required
+                                autoComplete="off"
                                 className="w-full pl-14 pr-6 py-5 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-white font-medium"
-                                placeholder="example@email.com"
+                                placeholder="이메일을 입력하세요"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
@@ -50,14 +57,15 @@ const LoginPage = () => {
                     </div>
 
                     <div className="space-y-3">
-                        <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-2">Access Key (Password)</label>
+                        <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-2">Access Key</label>
                         <div className="relative group">
                             <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors" size={18} />
                             <input
                                 type="password"
                                 required
+                                autoComplete="new-password"
                                 className="w-full pl-14 pr-6 py-5 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-white font-medium"
-                                placeholder="••••••••"
+                                placeholder="액세스 키를 입력하세요"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
