@@ -49,15 +49,36 @@ const LandingPage = () => {
 
                 if (error) throw error;
 
+                let finalApps = [];
                 if (data && data.length > 0) {
-                    setApps(data);
+                    finalApps = [...data];
+                }
+
+                // 로컬 데이터 병합 (중복 방지 로직 없이 모두 합쳐서 보여줌, 마이그레이션 유도)
+                const storedApps = localStorage.getItem('ican_apps');
+                if (storedApps) {
+                    const parsedApps = JSON.parse(storedApps);
+                    if (parsedApps.length > 0) {
+                        // 서버 데이터와 로컬 데이터를 합침
+                        setApps([...finalApps, ...parsedApps]);
+                    } else if (finalApps.length > 0) {
+                        setApps(finalApps);
+                    } else {
+                        setApps(INITIAL_APPS);
+                    }
+                } else if (finalApps.length > 0) {
+                    setApps(finalApps);
                 } else {
-                    // DB가 비어있으면 초기 데이터 사용 및 저장 시도 (관리자만 가능하게 할 수도 있지만 일단 보여주기용)
                     setApps(INITIAL_APPS);
                 }
             } catch (err) {
                 console.error('Error fetching apps:', err);
-                setApps(INITIAL_APPS);
+                const storedApps = localStorage.getItem('ican_apps');
+                if (storedApps) {
+                    setApps(JSON.parse(storedApps));
+                } else {
+                    setApps(INITIAL_APPS);
+                }
             } finally {
                 setLoading(false);
             }

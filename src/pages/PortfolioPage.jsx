@@ -44,8 +44,23 @@ const PortfolioPage = () => {
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
+                let finalApps = [];
                 if (data && data.length > 0) {
-                    setApps(data);
+                    finalApps = [...data];
+                }
+
+                const storedApps = localStorage.getItem('ican_apps');
+                if (storedApps) {
+                    const parsedApps = JSON.parse(storedApps);
+                    if (parsedApps.length > 0) {
+                        setApps([...finalApps, ...parsedApps]);
+                    } else if (finalApps.length > 0) {
+                        setApps(finalApps);
+                    } else {
+                        setApps(INITIAL_APPS);
+                    }
+                } else if (finalApps.length > 0) {
+                    setApps(finalApps);
                 } else {
                     setApps(INITIAL_APPS);
                 }
