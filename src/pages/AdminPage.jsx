@@ -83,18 +83,24 @@ const AdminPage = () => {
             const legacyInquiries = JSON.parse(localStorage.getItem('ican_inquiries') || '[]');
 
             if (legacyApps.length > 0) {
-                const appsToInsert = legacyApps.map(({ id, ...rest }) => ({
-                    title: rest.title,
-                    desc: rest.desc,
-                    price: rest.price,
-                    category: rest.category,
-                    image: rest.image,
-                    link: rest.link,
-                    linkType: rest.linkType,
-                    features: rest.features || []
-                }));
-                const { error: appErr } = await supabase.from('apps').insert(appsToInsert);
-                if (appErr) throw appErr;
+                // 기본 샘플 데이터는 서버로 이관하지 않음 (중복 방지)
+                const sampleTitles = ["AI 이미지 마스터", "뉴럴 컨텐츠 라이터", "보이스 시뮬레이터 Pro"];
+                const filteredApps = legacyApps.filter(app => !sampleTitles.includes(app.title));
+
+                if (filteredApps.length > 0) {
+                    const appsToInsert = filteredApps.map(({ id, ...rest }) => ({
+                        title: rest.title,
+                        desc: rest.desc,
+                        price: rest.price,
+                        category: rest.category,
+                        image: rest.image,
+                        link: rest.link,
+                        linkType: rest.linkType,
+                        features: rest.features || []
+                    }));
+                    const { error: appErr } = await supabase.from('apps').insert(appsToInsert);
+                    if (appErr) throw appErr;
+                }
             }
 
             if (legacyInquiries.length > 0) {
